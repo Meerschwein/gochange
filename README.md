@@ -2,12 +2,12 @@
 
 ## Build
 
-```go
+```sh
 go build ./cmd/gochange
 ```
 
 ## Test
 
-```go
+```sh
 go test ./...
 ```
