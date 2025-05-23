@@ -1,0 +1,67 @@
+-- file.go --
+package p
+
+type IfaceA interface{ MethA() }
+
+type IfaceB interface{ MethB() }
+
+type A struct{}
+
+func (a A) MethA() {}
+
+type B struct{}
+
+func (b B) MethB() {}
+
+type AB struct{}
+
+func (ab AB) MethA() {}
+func (ab AB) MethB() {}
+
+func callA(a A) { // want `a could be IfaceA`
+	a.MethA()
+}
+
+func callB(b B) { // want `b could be IfaceB`
+	b.MethB()
+}
+
+func callAB(ab AB) { // want `ab could be interface{MethA\(\); MethB\(\)}`
+	ab.MethA()
+	ab.MethB()
+}
+-- file.go.golden --
+package p
+
+type IfaceA interface{ MethA() }
+
+type IfaceB interface{ MethB() }
+
+type A struct{}
+
+func (a A) MethA() {}
+
+type B struct{}
+
+func (b B) MethB() {}
+
+type AB struct{}
+
+func (ab AB) MethA() {}
+func (ab AB) MethB() {}
+
+func callA(a IfaceA) { // want `a could be IfaceA`
+	a.MethA()
+}
+
+func callB(b IfaceB) { // want `b could be IfaceB`
+	b.MethB()
+}
+
+func callAB(ab interface {
+	MethA()
+	MethB()
+}) { // want `ab could be interface{MethA\(\); MethB\(\)}`
+	ab.MethA()
+	ab.MethB()
+}

@@ -1,0 +1,26 @@
+-- file.go --
+package p
+
+type IfaceA interface{ MethA() }
+
+type IfaceAB interface {
+	MethA()
+	MethB()
+}
+
+func use(ab IfaceAB) { // want `ab could be IfaceA`
+	ab.MethA()
+}
+-- file.go.golden --
+package p
+
+type IfaceA interface{ MethA() }
+
+type IfaceAB interface {
+	MethA()
+	MethB()
+}
+
+func use(ab IfaceA) { // want `ab could be IfaceA`
+	ab.MethA()
+}

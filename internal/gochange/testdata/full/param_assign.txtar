@@ -1,0 +1,15 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+func do2(iface *Iface, a A) {
+	*iface = a
+}
+
+func do(a *int) {
+	*a = 1
+}

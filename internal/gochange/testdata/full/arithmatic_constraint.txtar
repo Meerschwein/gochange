@@ -1,0 +1,6 @@
+-- file.go --
+package p
+
+func use(i int) int {
+	return i + i
+}

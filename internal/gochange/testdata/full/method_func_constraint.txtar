@@ -1,0 +1,32 @@
+-- file.go --
+package p
+
+type IfaceA interface{ MethA() }
+
+type A struct{}
+
+func (A) MethA() {}
+
+type B struct{}
+
+func (B) needsA(_ IfaceA, _ string) {}
+
+func use(a A) { // want `a could be IfaceA`
+	(B{}).needsA(a, "hello")
+}
+-- file.go.golden --
+package p
+
+type IfaceA interface{ MethA() }
+
+type A struct{}
+
+func (A) MethA() {}
+
+type B struct{}
+
+func (B) needsA(_ IfaceA, _ string) {}
+
+func use(a IfaceA) { // want `a could be IfaceA`
+	(B{}).needsA(a, "hello")
+}

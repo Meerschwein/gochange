@@ -1,0 +1,55 @@
+-- p1/file.go --
+package p1
+
+import _ "mod.com/p2"
+
+type ifaceAB interface {
+	MethA()
+	MethB()
+}
+
+type A struct{}
+
+func (A) MethA() {}
+
+// no diagnostics since the ifaceA's are private to p2
+
+func use[T ifaceAB](ab T) { // want `ab could be interface{MethA\(\)}`
+	ab.MethA()
+}
+
+func use2(ab ifaceAB) { // want `ab could be interface{MethA\(\)}`
+	ab.MethA()
+}
+-- p1/file.go.golden --
+package p1
+
+import _ "mod.com/p2"
+
+type ifaceAB interface {
+	MethA()
+	MethB()
+}
+
+type A struct{}
+
+func (A) MethA() {}
+
+// no diagnostics since the ifaceA's are private to p2
+
+func use[T interface{ MethA() }](ab T) { // want `ab could be interface{MethA\(\)}`
+	ab.MethA()
+}
+
+func use2(ab interface{ MethA() }) { // want `ab could be interface{MethA\(\)}`
+	ab.MethA()
+}
+-- p2/file.go --
+package p2
+
+type ifaceA interface{ MethA() }
+type ifaceAAlias = ifaceA
+-- go.mod --
+module mod.com
+
+go 1.18

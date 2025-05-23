@@ -1,0 +1,84 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type Inner struct{ a A }
+type S struct{ inner []Inner }
+
+type InnerI struct{ i Iface }
+type SI struct{ inner []InnerI }
+
+func do(a A) *S {
+	return &S{inner: []Inner{{a: a}}}
+}
+
+func do2(a *A) *S {
+	return &S{inner: []Inner{{a: *a}}}
+}
+
+func do3(a A) *SI { // want `a could be Iface`
+	return &SI{inner: []InnerI{{i: a}}}
+}
+
+func do4(a *A) *SI { // want `a could be Iface`
+	return &SI{inner: []InnerI{{i: *a}}}
+}
+
+func do5(a Iface) *SI {
+	return &SI{inner: []InnerI{{i: a}}}
+}
+
+func test() {
+	do(A{})
+	do2(&A{})
+	do3(A{})
+	do4(&A{})
+	do5(A{})
+	do5(&A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type Inner struct{ a A }
+type S struct{ inner []Inner }
+
+type InnerI struct{ i Iface }
+type SI struct{ inner []InnerI }
+
+func do(a A) *S {
+	return &S{inner: []Inner{{a: a}}}
+}
+
+func do2(a *A) *S {
+	return &S{inner: []Inner{{a: *a}}}
+}
+
+func do3(a Iface) *SI { // want `a could be Iface`
+	return &SI{inner: []InnerI{{i: a}}}
+}
+
+func do4(a Iface) *SI { // want `a could be Iface`
+	return &SI{inner: []InnerI{{i: *a}}}
+}
+
+func do5(a Iface) *SI {
+	return &SI{inner: []InnerI{{i: a}}}
+}
+
+func test() {
+	do(A{})
+	do2(&A{})
+	do3(A{})
+	do4(&A{})
+	do5(A{})
+	do5(&A{})
+}

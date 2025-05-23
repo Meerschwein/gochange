@@ -1,0 +1,30 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func (A) String() string { return "A" }
+
+func use(a A) { // want `a could be fmt.Stringer`
+	a.String()
+}
+
+func test() {
+	use(A{})
+}
+-- file.go.golden --
+package p
+
+import "fmt"
+
+type A struct{}
+
+func (A) String() string { return "A" }
+
+func use(a fmt.Stringer) { // want `a could be fmt.Stringer`
+	a.String()
+}
+
+func test() {
+	use(A{})
+}

@@ -1,0 +1,32 @@
+-- file.go --
+package p
+
+import "testing"
+
+type IfaceB interface {
+	Fail()
+}
+
+func BenchmarkThing(b *testing.B) {
+	b.Fail()
+}
+
+func NotABenchmark(b *testing.B) { // want `b could be IfaceB`
+	b.Fail()
+}
+-- file.go.golden --
+package p
+
+import "testing"
+
+type IfaceB interface {
+	Fail()
+}
+
+func BenchmarkThing(b *testing.B) {
+	b.Fail()
+}
+
+func NotABenchmark(b IfaceB) { // want `b could be IfaceB`
+	b.Fail()
+}

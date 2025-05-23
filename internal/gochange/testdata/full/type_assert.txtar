@@ -1,0 +1,23 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+func useAny(a interface{}) {
+	if a, ok := a.(A); ok {
+		print(a)
+	}
+}
+
+func do(a A) {
+	useAny(a)
+}
+
+func do2(i Iface) {
+	a := i.(A)
+	_ = a
+}

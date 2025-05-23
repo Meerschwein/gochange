@@ -1,0 +1,32 @@
+-- file.go --
+package p1
+
+import _ "fmt"
+
+type MyStringer interface {
+	String() string
+}
+
+type HasString struct{}
+
+func (h HasString) String() string { return "my string" }
+
+func UseStringer(h HasString) { // want `h could be MyStringer`
+	h.String()
+}
+-- file.go.golden --
+package p1
+
+import _ "fmt"
+
+type MyStringer interface {
+	String() string
+}
+
+type HasString struct{}
+
+func (h HasString) String() string { return "my string" }
+
+func UseStringer(h MyStringer) { // want `h could be MyStringer`
+	h.String()
+}

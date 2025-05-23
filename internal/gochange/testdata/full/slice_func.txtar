@@ -1,0 +1,10 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func needsSlice(_ []A) {}
+
+func use(as []A) {
+	needsSlice(as)
+}

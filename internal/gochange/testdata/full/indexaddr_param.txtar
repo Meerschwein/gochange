@@ -1,0 +1,36 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() int }
+
+type A struct{ n int }
+
+func (a A) Meth() int { return a.n }
+
+type As []A
+
+func do(as As) {
+	needsIface(as[0])
+}
+
+func max(as As) {
+	var max int
+	for i := range as {
+		if as[i].n > max {
+			max = as[i].n
+		}
+	}
+}
+
+func do2(as As) {
+	var max int
+	for i := range as {
+		if as[i].n > max {
+			max = needsIface(as[i])
+		}
+	}
+}
+
+func needsIface(i Iface) int {
+	return i.Meth()
+}

@@ -1,0 +1,15 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+func so(a A) {
+	var aa A
+	if a != aa {
+		a.Meth()
+	}
+}

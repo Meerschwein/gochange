@@ -1,0 +1,12 @@
+-- file.go --
+package p
+
+type S struct{}
+
+type I = S
+
+func needsI(I) {}
+
+func do(i I) {
+	needsI(i)
+}

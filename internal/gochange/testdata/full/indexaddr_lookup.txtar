@@ -1,0 +1,8 @@
+-- file.go --
+package p
+
+var ints map[bool][]int
+
+func do(a int) {
+	_ = ints[true][a]
+}

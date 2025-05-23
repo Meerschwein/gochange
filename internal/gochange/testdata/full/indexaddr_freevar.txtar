@@ -1,0 +1,13 @@
+-- file.go --
+package p
+
+type A struct{}
+type As []A
+
+func do(as As) {
+	func() {
+		for i := range as {
+			_ = &as[i]
+		}
+	}()
+}

@@ -1,0 +1,42 @@
+-- p1/file.go --
+package p1
+
+import "mod.com/p2"
+
+type localStringer = p2.ExportedStringer
+
+type HasString struct{}
+
+func (h HasString) String() string { return "string" }
+
+func UseLocalAlias(h HasString) { // want `h could be localStringer`
+	h.String()
+}
+-- p1/file.go.golden --
+package p1
+
+import "mod.com/p2"
+
+type localStringer = p2.ExportedStringer
+
+type HasString struct{}
+
+func (h HasString) String() string { return "string" }
+
+func UseLocalAlias(h localStringer) { // want `h could be localStringer`
+	h.String()
+}
+-- p2/file.go --
+package p2
+
+type baseStringer interface {
+	String() string
+}
+
+type ExportedStringer = baseStringer
+
+type IndirectStringer = ExportedStringer
+-- go.mod --
+module mod.com
+
+go 1.18

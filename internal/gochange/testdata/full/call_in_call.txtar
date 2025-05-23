@@ -1,0 +1,80 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type ConcreteAssign struct{ a A }
+type IfaceAssign struct{ a Iface }
+
+func do2(a A) func(*IfaceAssign) { // want `a could be Iface`
+	return func(ca *IfaceAssign) {
+		ca.a = a
+	}
+}
+
+func do(a A) func(*ConcreteAssign) {
+	return func(ca *ConcreteAssign) {
+		ca.a = a
+	}
+}
+
+func do3(a ...A) func(*ConcreteAssign) {
+	return func(ca *ConcreteAssign) {
+		ca.a = a[0]
+	}
+}
+
+type StrAssign struct {
+	s struct {
+		s string
+	}
+}
+
+func do4(s ...string) func(*StrAssign) {
+	return func(sa *StrAssign) {
+		sa.s.s = s[0]
+	}
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type ConcreteAssign struct{ a A }
+type IfaceAssign struct{ a Iface }
+
+func do2(a Iface) func(*IfaceAssign) { // want `a could be Iface`
+	return func(ca *IfaceAssign) {
+		ca.a = a
+	}
+}
+
+func do(a A) func(*ConcreteAssign) {
+	return func(ca *ConcreteAssign) {
+		ca.a = a
+	}
+}
+
+func do3(a ...A) func(*ConcreteAssign) {
+	return func(ca *ConcreteAssign) {
+		ca.a = a[0]
+	}
+}
+
+type StrAssign struct {
+	s struct {
+		s string
+	}
+}
+
+func do4(s ...string) func(*StrAssign) {
+	return func(sa *StrAssign) {
+		sa.s.s = s[0]
+	}
+}

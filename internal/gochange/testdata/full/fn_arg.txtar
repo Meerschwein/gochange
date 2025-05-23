@@ -1,0 +1,64 @@
+-- file.go --
+package p
+
+type Iface interface{ MethA() }
+
+type A struct{}
+
+func (A) MethA() {}
+
+func doVisit(fn func(A), fnArg A) {
+	fn(fnArg)
+}
+
+func doVisit2(fn func(int, A), fnArg A) {
+	fn(42, fnArg)
+}
+
+func doVisitIface(fn func(Iface), fnArg A) { // want `fnArg could be Iface`
+	fn(fnArg)
+}
+
+var globlFn func(int, A, string)
+
+func doVisitGlobl(fnArg A) {
+	globlFn(42, fnArg, "hi")
+}
+
+var globlIfaceFn func(int, Iface, string)
+
+func doVisitGloblIface(fnArg A) { // want `fnArg could be Iface`
+	globlIfaceFn(42, fnArg, "hi")
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ MethA() }
+
+type A struct{}
+
+func (A) MethA() {}
+
+func doVisit(fn func(A), fnArg A) {
+	fn(fnArg)
+}
+
+func doVisit2(fn func(int, A), fnArg A) {
+	fn(42, fnArg)
+}
+
+func doVisitIface(fn func(Iface), fnArg Iface) { // want `fnArg could be Iface`
+	fn(fnArg)
+}
+
+var globlFn func(int, A, string)
+
+func doVisitGlobl(fnArg A) {
+	globlFn(42, fnArg, "hi")
+}
+
+var globlIfaceFn func(int, Iface, string)
+
+func doVisitGloblIface(fnArg Iface) { // want `fnArg could be Iface`
+	globlIfaceFn(42, fnArg, "hi")
+}

@@ -1,0 +1,30 @@
+-- p1/p1.go --
+package p1
+
+import _ "somemod/p2"
+
+type A struct{}
+
+func (a A) MethA() {}
+
+func use(a A) { // want `a could be somemod/p2.Public_IfaceA`
+	a.MethA()
+}
+-- p1/p1.go.golden --
+package p1
+
+import _ "somemod/p2"
+
+type A struct{}
+
+func (a A) MethA() {}
+
+func use(a Public_IfaceA) { // want `a could be somemod/p2.Public_IfaceA`
+	a.MethA()
+}
+-- p2/p2.go --
+package p2
+
+type Public_IfaceA interface{ MethA() }
+-- go.mod --
+module somemod

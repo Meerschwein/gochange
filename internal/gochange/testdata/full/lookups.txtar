@@ -1,0 +1,27 @@
+-- file.go --
+package p
+
+import (
+	"fmt"
+	"io"
+)
+
+func RunVersion(out io.Writer, of string) error {
+
+	switch of {
+	case "":
+		fmt.Fprintf(out, "none")
+	case "short":
+		fmt.Fprintf(out, "%s\n", "short")
+	case "yaml":
+		y := of
+		fmt.Fprintln(out, string(y))
+	case "json":
+		y := of
+		fmt.Fprintln(out, string(y))
+	default:
+		return fmt.Errorf("invalid output format: %s", of)
+	}
+
+	return nil
+}

@@ -1,0 +1,52 @@
+-- file.go --
+package p
+
+type Stringer interface {
+	String() string
+}
+
+type Base struct{}
+
+func (b Base) String() string { return "base" }
+
+type Embedded struct {
+	Base // Embeds Base, inherits String method
+}
+
+func UseBase(b Base) { // want `b could be Stringer`
+	b.String()
+}
+
+func UseEmbedded(e Embedded) { // want `e could be Stringer`
+	e.String() // This calls the promoted method
+}
+
+func UseEmbeddedExplicit(e Embedded) {
+	e.Base.String()
+}
+-- file.go.golden --
+package p
+
+type Stringer interface {
+	String() string
+}
+
+type Base struct{}
+
+func (b Base) String() string { return "base" }
+
+type Embedded struct {
+	Base // Embeds Base, inherits String method
+}
+
+func UseBase(b Stringer) { // want `b could be Stringer`
+	b.String()
+}
+
+func UseEmbedded(e Stringer) { // want `e could be Stringer`
+	e.String() // This calls the promoted method
+}
+
+func UseEmbeddedExplicit(e Embedded) {
+	e.Base.String()
+}

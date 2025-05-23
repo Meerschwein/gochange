@@ -1,0 +1,48 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+
+type Inner struct{}
+
+func (Inner) Meth() {}
+
+func useIface(i Iface) {}
+
+type OuterEmbed struct{ Inner }
+
+func do1(o OuterEmbed) { useIface(o) } // want `o could be Iface`
+func do2(o OuterEmbed) { useIface(o.Inner) }
+
+type Outer struct{ nonembed Inner }
+
+func do3(o Outer) { useIface(o.nonembed) }
+
+type OuterIface struct{ Iface }
+
+func do4(o OuterIface) { useIface(o) } // want `o could be Iface`
+func do5(o OuterIface) { useIface(o.Iface) }
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+
+type Inner struct{}
+
+func (Inner) Meth() {}
+
+func useIface(i Iface) {}
+
+type OuterEmbed struct{ Inner }
+
+func do1(o Iface)      { useIface(o) } // want `o could be Iface`
+func do2(o OuterEmbed) { useIface(o.Inner) }
+
+type Outer struct{ nonembed Inner }
+
+func do3(o Outer) { useIface(o.nonembed) }
+
+type OuterIface struct{ Iface }
+
+func do4(o Iface)      { useIface(o) } // want `o could be Iface`
+func do5(o OuterIface) { useIface(o.Iface) }

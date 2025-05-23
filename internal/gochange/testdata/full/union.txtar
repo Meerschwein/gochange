@@ -1,0 +1,44 @@
+-- file.go --
+package p
+
+type A struct{}
+type B struct{}
+
+type AOrB interface{ A | B }
+
+func needsAOrB[T AOrB](T) {}
+
+func do(a A)  { needsAOrB(a) } // want `a could be AOrB`
+func do2(b B) { needsAOrB(b) } // want `b could be AOrB`
+
+func do3[T AOrB](a T) { needsAOrB(a) }
+
+func test() {
+	do(A{})
+	do2(B{})
+
+	do3(A{})
+	do3(B{})
+}
+-- file.go.golden --
+package p
+
+type A struct{}
+type B struct{}
+
+type AOrB interface{ A | B }
+
+func needsAOrB[T AOrB](T) {}
+
+func do[T AOrB](a T)  { needsAOrB(a) } // want `a could be AOrB`
+func do2[T AOrB](b T) { needsAOrB(b) } // want `b could be AOrB`
+
+func do3[T AOrB](a T) { needsAOrB(a) }
+
+func test() {
+	do(A{})
+	do2(B{})
+
+	do3(A{})
+	do3(B{})
+}

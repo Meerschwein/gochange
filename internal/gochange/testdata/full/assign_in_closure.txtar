@@ -1,0 +1,206 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type B struct{ a *A }
+type BI struct{ i Iface }
+
+type BB struct{ b B }
+type BBI struct{ bi BI }
+
+func do(a A) func(B) {
+	return func(b B) {
+		b.a = &a
+	}
+}
+func do2(a A) func(*B) {
+	return func(b *B) {
+		b.a = &a
+	}
+}
+
+func do3(a A) func(BB) {
+	return func(b BB) {
+		b.b.a = &a
+	}
+}
+
+func do4(a A) func(*BB) {
+	return func(b *BB) {
+		b.b.a = &a
+	}
+}
+
+func do5(a A) func(BBI) { // want `a could be Iface`
+	return func(b BBI) {
+		b.bi.i = a
+	}
+}
+
+func do6(a A) func(*BBI) { // want `a could be Iface`
+	return func(b *BBI) {
+		b.bi.i = a
+	}
+}
+
+func do7(a A) func(BBI) { // want `a could be Iface`
+	return func(b BBI) {
+		b.bi.i = a
+	}
+}
+
+func do8(a A) func(*BBI) { // want `a could be Iface`
+	return func(b *BBI) {
+		b.bi.i = a
+	}
+}
+
+func do9(i Iface) func(BBI) {
+	return func(b BBI) {
+		b.bi.i = i
+	}
+}
+
+func do10(i Iface) func(*BBI) {
+	return func(b *BBI) {
+		b.bi.i = i
+	}
+}
+
+func do11(i Iface) func(BBI) {
+	return func(b BBI) {
+		b.bi.i = i
+	}
+}
+
+func do12(i Iface) func(*BBI) {
+	return func(b *BBI) {
+		b.bi.i = i
+	}
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(A{})
+	do4(A{})
+	do5(A{})
+	do6(A{})
+	do7(A{})
+	do8(A{})
+	do9(A{})
+	do9(&A{})
+	do10(A{})
+	do10(&A{})
+	do11(A{})
+	do11(&A{})
+	do12(A{})
+	do12(&A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type B struct{ a *A }
+type BI struct{ i Iface }
+
+type BB struct{ b B }
+type BBI struct{ bi BI }
+
+func do(a A) func(B) {
+	return func(b B) {
+		b.a = &a
+	}
+}
+func do2(a A) func(*B) {
+	return func(b *B) {
+		b.a = &a
+	}
+}
+
+func do3(a A) func(BB) {
+	return func(b BB) {
+		b.b.a = &a
+	}
+}
+
+func do4(a A) func(*BB) {
+	return func(b *BB) {
+		b.b.a = &a
+	}
+}
+
+func do5(a Iface) func(BBI) { // want `a could be Iface`
+	return func(b BBI) {
+		b.bi.i = a
+	}
+}
+
+func do6(a Iface) func(*BBI) { // want `a could be Iface`
+	return func(b *BBI) {
+		b.bi.i = a
+	}
+}
+
+func do7(a Iface) func(BBI) { // want `a could be Iface`
+	return func(b BBI) {
+		b.bi.i = a
+	}
+}
+
+func do8(a Iface) func(*BBI) { // want `a could be Iface`
+	return func(b *BBI) {
+		b.bi.i = a
+	}
+}
+
+func do9(i Iface) func(BBI) {
+	return func(b BBI) {
+		b.bi.i = i
+	}
+}
+
+func do10(i Iface) func(*BBI) {
+	return func(b *BBI) {
+		b.bi.i = i
+	}
+}
+
+func do11(i Iface) func(BBI) {
+	return func(b BBI) {
+		b.bi.i = i
+	}
+}
+
+func do12(i Iface) func(*BBI) {
+	return func(b *BBI) {
+		b.bi.i = i
+	}
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(A{})
+	do4(A{})
+	do5(A{})
+	do6(A{})
+	do7(A{})
+	do8(A{})
+	do9(A{})
+	do9(&A{})
+	do10(A{})
+	do10(&A{})
+	do11(A{})
+	do11(&A{})
+	do12(A{})
+	do12(&A{})
+}

@@ -1,0 +1,32 @@
+-- file.go --
+package p
+
+import "testing"
+
+type IfaceF interface {
+	Fail()
+}
+
+func FuzzThing(f *testing.F) {
+	f.Fail()
+}
+
+func NotAFuzz(f *testing.F) { // want `f could be IfaceF`
+	f.Fail()
+}
+-- file.go.golden --
+package p
+
+import "testing"
+
+type IfaceF interface {
+	Fail()
+}
+
+func FuzzThing(f *testing.F) {
+	f.Fail()
+}
+
+func NotAFuzz(f IfaceF) { // want `f could be IfaceF`
+	f.Fail()
+}

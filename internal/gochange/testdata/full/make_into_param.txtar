@@ -1,0 +1,9 @@
+-- file.go --
+package p
+
+func do(out *[]int) {
+	*out = make([]int, 10)
+	needsIntPtr(&(*out)[0])
+}
+
+func needsIntPtr(*int) {}

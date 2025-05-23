@@ -1,0 +1,40 @@
+-- file.go --
+package p
+
+import "testing"
+
+type IfaceT interface {
+	Fail()
+}
+
+func TestThing(t *testing.T) {
+	t.Fail()
+}
+
+func TestMain(t *testing.T) {
+	t.Fail()
+}
+
+func NotATest(t *testing.T) { // want `t could be IfaceT`
+	t.Fail()
+}
+-- file.go.golden --
+package p
+
+import "testing"
+
+type IfaceT interface {
+	Fail()
+}
+
+func TestThing(t *testing.T) {
+	t.Fail()
+}
+
+func TestMain(t *testing.T) {
+	t.Fail()
+}
+
+func NotATest(t IfaceT) { // want `t could be IfaceT`
+	t.Fail()
+}

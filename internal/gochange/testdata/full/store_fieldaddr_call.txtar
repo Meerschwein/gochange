@@ -1,0 +1,96 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+type B struct{ a A }
+type BI struct{ i Iface }
+
+func getB() *B   { return &B{} }
+func getBI() *BI { return &BI{} }
+
+func do(a A) {
+	b := getB()
+	b.a = a
+}
+
+func do2(a *A) {
+	b := getB()
+	b.a = *a
+}
+
+func do3(a A) { // want `a could be Iface`
+	bi := getBI()
+	bi.i = a
+}
+
+func do4(a *A) { // want `a could be Iface`
+	bi := getBI()
+	bi.i = *a
+}
+
+func do5(a Iface) {
+	bi := getBI()
+	bi.i = a
+}
+
+func test() {
+	do(A{})
+	do2(&A{})
+	do3(A{})
+	do4(&A{})
+	do5(A{})
+	do5(&A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+type B struct{ a A }
+type BI struct{ i Iface }
+
+func getB() *B   { return &B{} }
+func getBI() *BI { return &BI{} }
+
+func do(a A) {
+	b := getB()
+	b.a = a
+}
+
+func do2(a *A) {
+	b := getB()
+	b.a = *a
+}
+
+func do3(a Iface) { // want `a could be Iface`
+	bi := getBI()
+	bi.i = a
+}
+
+func do4(a Iface) { // want `a could be Iface`
+	bi := getBI()
+	bi.i = *a
+}
+
+func do5(a Iface) {
+	bi := getBI()
+	bi.i = a
+}
+
+func test() {
+	do(A{})
+	do2(&A{})
+	do3(A{})
+	do4(&A{})
+	do5(A{})
+	do5(&A{})
+}

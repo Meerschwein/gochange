@@ -1,0 +1,46 @@
+-- file.go --
+package p
+
+import _ "context"
+import "time"
+
+type MyContext struct{}
+
+func (m MyContext) Deadline() (deadline time.Time, ok bool) { return time.Now(), false }
+func (m MyContext) Done() <-chan struct{}                   { return nil }
+func (m MyContext) Err() error                              { return nil }
+func (m MyContext) Value(key interface{}) interface{}       { return nil }
+
+func UseCustomContext(ctx MyContext) { // want `ctx could be context.Context`
+	ctx.Deadline()
+	ctx.Done()
+	ctx.Err()
+	ctx.Value("key")
+}
+
+func UsePartialContext(ctx MyContext) { // want `ctx could be interface{Err\(\) error}`
+	ctx.Err()
+}
+-- file.go.golden --
+package p
+
+import _ "context"
+import "time"
+
+type MyContext struct{}
+
+func (m MyContext) Deadline() (deadline time.Time, ok bool) { return time.Now(), false }
+func (m MyContext) Done() <-chan struct{}                   { return nil }
+func (m MyContext) Err() error                              { return nil }
+func (m MyContext) Value(key interface{}) interface{}       { return nil }
+
+func UseCustomContext(ctx Context) { // want `ctx could be context.Context`
+	ctx.Deadline()
+	ctx.Done()
+	ctx.Err()
+	ctx.Value("key")
+}
+
+func UsePartialContext(ctx interface{ Err() error }) { // want `ctx could be interface{Err\(\) error}`
+	ctx.Err()
+}

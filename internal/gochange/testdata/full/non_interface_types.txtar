@@ -1,0 +1,44 @@
+-- file.go --
+package p
+
+type MyInt int
+
+func (m MyInt) Double() int { return int(m * 2) }
+
+type Doubler interface {
+	Double() int
+}
+
+type MyFloat float64
+
+func (m MyFloat) Double() int { return int(float64(m) * 2) }
+
+func UseMyInt(m MyInt) { // want `m could be Doubler`
+	m.Double()
+}
+
+func UseMyFloat(m MyFloat) { // want `m could be Doubler`
+	m.Double()
+}
+-- file.go.golden --
+package p
+
+type MyInt int
+
+func (m MyInt) Double() int { return int(m * 2) }
+
+type Doubler interface {
+	Double() int
+}
+
+type MyFloat float64
+
+func (m MyFloat) Double() int { return int(float64(m) * 2) }
+
+func UseMyInt(m Doubler) { // want `m could be Doubler`
+	m.Double()
+}
+
+func UseMyFloat(m Doubler) { // want `m could be Doubler`
+	m.Double()
+}

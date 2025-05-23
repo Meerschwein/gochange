@@ -1,0 +1,12 @@
+-- file.go --
+package p
+
+type Empty interface{}
+
+type A struct{}
+
+func needAny(any) {}
+
+func do(a A) {
+	needAny(a)
+}

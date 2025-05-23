@@ -1,0 +1,56 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+func assertFn(some interface{}, a A) {
+	if fn, ok := some.(func(A)); ok {
+		fn(a)
+	}
+}
+
+func assertFnAgain(some interface{}, a A) {
+	some.(func(A))(a)
+}
+
+func assertFnIface(some interface{}, a A) { // want `a could be Iface`
+	if fn, ok := some.(func(Iface)); ok {
+		fn(a)
+	}
+}
+
+func assertFnIfaceAgain(some interface{}, a A) { // want `a could be Iface`
+	some.(func(Iface))(a)
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+func assertFn(some interface{}, a A) {
+	if fn, ok := some.(func(A)); ok {
+		fn(a)
+	}
+}
+
+func assertFnAgain(some interface{}, a A) {
+	some.(func(A))(a)
+}
+
+func assertFnIface(some interface{}, a Iface) { // want `a could be Iface`
+	if fn, ok := some.(func(Iface)); ok {
+		fn(a)
+	}
+}
+
+func assertFnIfaceAgain(some interface{}, a Iface) { // want `a could be Iface`
+	some.(func(Iface))(a)
+}

@@ -1,0 +1,154 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+func do(a *A) {
+	fns := []func(*A){}
+	if true {
+		fns = append(fns, func(*A) {})
+	} else {
+		fns = append(fns, func(*A) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func do2(a A) {
+	fns := []func(A){}
+	if true {
+		fns = append(fns, func(A) {})
+	} else {
+		fns = append(fns, func(A) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func do3(a A) { // want `a could be Iface`
+	fns := []func(Iface){}
+	if true {
+		fns = append(fns, func(Iface) {})
+	} else {
+		fns = append(fns, func(Iface) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func do4(a *A) { // want `a could be Iface`
+	fns := []func(Iface){}
+	if true {
+		fns = append(fns, func(Iface) {})
+	} else {
+		fns = append(fns, func(Iface) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func do5(a Iface) {
+	fns := []func(Iface){}
+	if true {
+		fns = append(fns, func(Iface) {})
+	} else {
+		fns = append(fns, func(Iface) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func test() {
+	do(&A{})
+	do2(A{})
+	do3(A{})
+	do4(&A{})
+
+	do5(A{})
+	do5(&A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+func do(a *A) {
+	fns := []func(*A){}
+	if true {
+		fns = append(fns, func(*A) {})
+	} else {
+		fns = append(fns, func(*A) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func do2(a A) {
+	fns := []func(A){}
+	if true {
+		fns = append(fns, func(A) {})
+	} else {
+		fns = append(fns, func(A) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func do3(a Iface) { // want `a could be Iface`
+	fns := []func(Iface){}
+	if true {
+		fns = append(fns, func(Iface) {})
+	} else {
+		fns = append(fns, func(Iface) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func do4(a Iface) { // want `a could be Iface`
+	fns := []func(Iface){}
+	if true {
+		fns = append(fns, func(Iface) {})
+	} else {
+		fns = append(fns, func(Iface) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func do5(a Iface) {
+	fns := []func(Iface){}
+	if true {
+		fns = append(fns, func(Iface) {})
+	} else {
+		fns = append(fns, func(Iface) {})
+	}
+	for _, fn := range fns {
+		fn(a)
+	}
+}
+
+func test() {
+	do(&A{})
+	do2(A{})
+	do3(A{})
+	do4(&A{})
+
+	do5(A{})
+	do5(&A{})
+}

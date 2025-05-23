@@ -1,0 +1,50 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type Inner struct{ ifaces []Iface }
+type S struct{ inner Inner }
+
+func do(a A) { // want `a could be Iface`
+	s := &S{}
+	s.inner.ifaces[0] = a
+}
+
+func do2(a Iface) {
+	s := &S{}
+	s.inner.ifaces[0] = a
+}
+
+func use() {
+	do(A{})
+	do2(A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type Inner struct{ ifaces []Iface }
+type S struct{ inner Inner }
+
+func do(a Iface) { // want `a could be Iface`
+	s := &S{}
+	s.inner.ifaces[0] = a
+}
+
+func do2(a Iface) {
+	s := &S{}
+	s.inner.ifaces[0] = a
+}
+
+func use() {
+	do(A{})
+	do2(A{})
+}

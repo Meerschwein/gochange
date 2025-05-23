@@ -1,0 +1,6 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func use(a A) {}

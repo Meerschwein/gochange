@@ -1,0 +1,14 @@
+-- file.go --
+package p
+
+type Empty interface{}
+
+func OnlyTypeAssertions(val interface{}) { // In Go 1.18+ this could be 'any'
+	_, _ = val.(string)
+	_, _ = val.(int)
+}
+
+func JustPassingThrough(x struct{}) {
+	// No methods called, but struct{} could be replaced with empty interface
+	var _ interface{} = x
+}

@@ -1,0 +1,10 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func (A) do(a string) {
+	needComparable(a)
+}
+
+func needComparable[T comparable](T) {}

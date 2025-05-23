@@ -1,0 +1,86 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func (A) IfaceDo() {}
+func (A) Do()      {}
+
+type Iface interface {
+	IfaceDo()
+}
+
+func UseIface(a A) { // want `a could be Iface`
+	a.IfaceDo()
+}
+
+func UseNoIface(a A) { // want `a could be interface{Do\(\); IfaceDo\(\)}`
+	a.IfaceDo()
+	a.Do()
+}
+
+func UseIfaceClosure(a A) { // want `a could be Iface`
+	func() {
+		a.IfaceDo()
+	}()
+}
+
+func UseNoIfaceClosure(a A) { // want `a could be interface{Do\(\); IfaceDo\(\)}`
+	a.IfaceDo()
+	func() {
+		a.Do()
+	}()
+}
+
+func Shadowing(a A) { // want `a could be Iface`
+	a.IfaceDo()
+	func(a A) {
+		a.Do()
+	}(A{})
+}
+-- file.go.golden --
+package p
+
+type A struct{}
+
+func (A) IfaceDo() {}
+func (A) Do()      {}
+
+type Iface interface {
+	IfaceDo()
+}
+
+func UseIface(a Iface) { // want `a could be Iface`
+	a.IfaceDo()
+}
+
+func UseNoIface(a interface {
+	Do()
+	IfaceDo()
+}) { // want `a could be interface{Do\(\); IfaceDo\(\)}`
+	a.IfaceDo()
+	a.Do()
+}
+
+func UseIfaceClosure(a Iface) { // want `a could be Iface`
+	func() {
+		a.IfaceDo()
+	}()
+}
+
+func UseNoIfaceClosure(a interface {
+	Do()
+	IfaceDo()
+}) { // want `a could be interface{Do\(\); IfaceDo\(\)}`
+	a.IfaceDo()
+	func() {
+		a.Do()
+	}()
+}
+
+func Shadowing(a Iface) { // want `a could be Iface`
+	a.IfaceDo()
+	func(a A) {
+		a.Do()
+	}(A{})
+}

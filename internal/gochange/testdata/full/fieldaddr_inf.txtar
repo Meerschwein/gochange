@@ -1,0 +1,20 @@
+-- file.go --
+package p
+
+type Error struct{ a *A }
+
+func (*Error) Error() string { return "" }
+
+type A struct{}
+
+func do(pod *A) (err error) {
+	defer func() {}()
+
+	if len([]int{}) == 0 {
+		return &Error{
+			a: pod,
+		}
+	}
+
+	return err
+}

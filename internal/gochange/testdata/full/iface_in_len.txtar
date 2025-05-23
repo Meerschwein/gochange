@@ -1,0 +1,52 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() []any }
+type A struct{}
+
+func (A) Meth() []any { return nil }
+
+func do(i Iface) {
+	func() { _ = len(i.Meth()) }()
+}
+
+func do2(a A) { // want `a could be Iface`
+	func() { _ = len(a.Meth()) }()
+}
+
+func do3(a *A) { // want `a could be Iface`
+	func() { _ = len(a.Meth()) }()
+}
+
+func test() {
+	do(A{})
+	do(&A{})
+	do2(A{})
+	do3(&A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() []any }
+type A struct{}
+
+func (A) Meth() []any { return nil }
+
+func do(i Iface) {
+	func() { _ = len(i.Meth()) }()
+}
+
+func do2(a Iface) { // want `a could be Iface`
+	func() { _ = len(a.Meth()) }()
+}
+
+func do3(a Iface) { // want `a could be Iface`
+	func() { _ = len(a.Meth()) }()
+}
+
+func test() {
+	do(A{})
+	do(&A{})
+	do2(A{})
+	do3(&A{})
+}

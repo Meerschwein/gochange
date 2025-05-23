@@ -1,0 +1,52 @@
+-- file.go --
+package p
+
+import "context"
+
+type Getter interface {
+	Get(context.Context, string) (any, error)
+}
+
+func doget(ctx context.Context, getter Getter, name string) (any, error) {
+	got, err := getter.Get(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	return got, nil
+}
+
+type A struct{}
+
+func (A) Get(ctx context.Context, name string) (any, error) {
+	return nil, nil
+}
+
+func f(ctx context.Context, a A, name string) (any, error) { // want `a could be Getter`
+	return doget(ctx, a, name)
+}
+-- file.go.golden --
+package p
+
+import "context"
+
+type Getter interface {
+	Get(context.Context, string) (any, error)
+}
+
+func doget(ctx context.Context, getter Getter, name string) (any, error) {
+	got, err := getter.Get(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	return got, nil
+}
+
+type A struct{}
+
+func (A) Get(ctx context.Context, name string) (any, error) {
+	return nil, nil
+}
+
+func f(ctx context.Context, a Getter, name string) (any, error) { // want `a could be Getter`
+	return doget(ctx, a, name)
+}

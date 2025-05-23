@@ -1,0 +1,22 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func (A) Write(p []byte) (n int, err error) { return 0, nil }
+
+func do(a A) { // want `a could be io.Writer`
+	a.Write([]byte("hello"))
+}
+-- file.go.golden --
+package p
+
+import "io"
+
+type A struct{}
+
+func (A) Write(p []byte) (n int, err error) { return 0, nil }
+
+func do(a io.Writer) { // want `a could be io.Writer`
+	a.Write([]byte("hello"))
+}

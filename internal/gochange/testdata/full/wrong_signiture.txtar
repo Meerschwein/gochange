@@ -1,0 +1,24 @@
+-- file.go --
+package p1
+
+type ifaceA interface{ MethA() }
+
+type A struct{}
+
+func (a A) MethA(int) {}
+
+func use(a A) { // want `a could be interface{MethA\(int\)}`
+	a.MethA(42)
+}
+-- file.go.golden --
+package p1
+
+type ifaceA interface{ MethA() }
+
+type A struct{}
+
+func (a A) MethA(int) {}
+
+func use(a interface{ MethA(int) }) { // want `a could be interface{MethA\(int\)}`
+	a.MethA(42)
+}

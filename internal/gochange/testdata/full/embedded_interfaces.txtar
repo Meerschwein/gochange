@@ -1,0 +1,66 @@
+-- file.go --
+package p
+
+type Reader interface {
+	Read() []byte
+}
+
+type Writer interface {
+	Write([]byte)
+}
+
+type ReadWriter interface {
+	Reader
+	Writer
+}
+
+type File struct{}
+
+func (f File) Read() []byte      { return nil }
+func (f File) Write(data []byte) {}
+
+func UseAsReader(f File) { // want `f could be Reader`
+	f.Read()
+}
+
+func UseAsWriter(f File) { // want `f could be Writer`
+	f.Write(nil)
+}
+
+func UseAsBoth(f File) { // want `f could be ReadWriter`
+	f.Read()
+	f.Write(nil)
+}
+-- file.go.golden --
+package p
+
+type Reader interface {
+	Read() []byte
+}
+
+type Writer interface {
+	Write([]byte)
+}
+
+type ReadWriter interface {
+	Reader
+	Writer
+}
+
+type File struct{}
+
+func (f File) Read() []byte      { return nil }
+func (f File) Write(data []byte) {}
+
+func UseAsReader(f Reader) { // want `f could be Reader`
+	f.Read()
+}
+
+func UseAsWriter(f Writer) { // want `f could be Writer`
+	f.Write(nil)
+}
+
+func UseAsBoth(f ReadWriter) { // want `f could be ReadWriter`
+	f.Read()
+	f.Write(nil)
+}

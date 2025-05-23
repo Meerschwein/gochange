@@ -1,0 +1,49 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+func need[T interface {
+	comparable
+	Iface
+}](T) {
+}
+
+func do(a A) { // want `a could be interface{comparable;Iface}`
+	need(a)
+}
+
+func use() {
+	a := A{}
+	do(a)
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+func need[T interface {
+	comparable
+	Iface
+}](T) {
+}
+
+func do[T interface {
+	comparable
+	Iface
+}](a T) { // want `a could be interface{comparable;Iface}`
+	need(a)
+}
+
+func use() {
+	a := A{}
+	do(a)
+}

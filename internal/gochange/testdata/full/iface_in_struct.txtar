@@ -1,0 +1,15 @@
+-- file.go --
+package p
+
+type Iface interface{}
+type HasIface interface{ Meth() }
+
+type HasIfaceImpl struct{ iface Iface }
+
+func (*HasIfaceImpl) Meth() {}
+
+func needsHasIface(HasIface) {}
+
+func do(i Iface) {
+	needsHasIface(&HasIfaceImpl{i})
+}

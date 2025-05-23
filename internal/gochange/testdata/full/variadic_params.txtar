@@ -1,0 +1,40 @@
+-- file.go --
+package p
+
+type Stringer interface {
+	String() string
+}
+
+type MyString struct{}
+
+func (m MyString) String() string { return "mystring" }
+
+func VariadicStrings(strs ...Stringer) {
+	for _, s := range strs {
+		s.String()
+	}
+}
+
+func ExpectVariadicSuggestion(s MyString) { // want `s could be Stringer`
+	s.String()
+}
+-- file.go.golden --
+package p
+
+type Stringer interface {
+	String() string
+}
+
+type MyString struct{}
+
+func (m MyString) String() string { return "mystring" }
+
+func VariadicStrings(strs ...Stringer) {
+	for _, s := range strs {
+		s.String()
+	}
+}
+
+func ExpectVariadicSuggestion(s Stringer) { // want `s could be Stringer`
+	s.String()
+}

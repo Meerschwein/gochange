@@ -1,0 +1,60 @@
+-- file.go --
+package p
+
+type Addable interface {
+	~int | ~float64
+}
+
+type Stringable interface {
+	String() string
+}
+
+type HasString struct{}
+
+func (h HasString) String() string { return "has string" }
+
+func GenericFunc[T Addable](val T) T {
+	return val + val
+}
+
+func UseGeneric[T Stringable](s T) { // This is correct as is, needs generic constraint
+	s.String()
+}
+
+func NonGenericWithStringable(s HasString) { // want `s could be Stringable`
+	s.String()
+}
+
+func ComplexGeneric[K comparable, V Stringable](key K, val V) {
+	val.String()
+}
+-- file.go.golden --
+package p
+
+type Addable interface {
+	~int | ~float64
+}
+
+type Stringable interface {
+	String() string
+}
+
+type HasString struct{}
+
+func (h HasString) String() string { return "has string" }
+
+func GenericFunc[T Addable](val T) T {
+	return val + val
+}
+
+func UseGeneric[T Stringable](s T) { // This is correct as is, needs generic constraint
+	s.String()
+}
+
+func NonGenericWithStringable(s Stringable) { // want `s could be Stringable`
+	s.String()
+}
+
+func ComplexGeneric[K comparable, V Stringable](key K, val V) {
+	val.String()
+}

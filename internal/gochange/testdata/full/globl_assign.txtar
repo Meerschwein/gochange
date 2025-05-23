@@ -1,0 +1,62 @@
+-- file.go --
+package p
+
+import "sync"
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+var S struct {
+	once sync.Once
+	a    A
+}
+
+var SI struct {
+	once  sync.Once
+	iface Iface
+}
+
+func doi(a A) { // want `a could be Iface`
+	SI.once.Do(func() {
+		SI.iface = a
+	})
+}
+
+func do(a A) {
+	S.once.Do(func() {
+		S.a = a
+	})
+}
+-- file.go.golden --
+package p
+
+import "sync"
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+var S struct {
+	once sync.Once
+	a    A
+}
+
+var SI struct {
+	once  sync.Once
+	iface Iface
+}
+
+func doi(a Iface) { // want `a could be Iface`
+	SI.once.Do(func() {
+		SI.iface = a
+	})
+}
+
+func do(a A) {
+	S.once.Do(func() {
+		S.a = a
+	})
+}

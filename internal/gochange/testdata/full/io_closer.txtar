@@ -1,0 +1,22 @@
+-- file.go --
+package p
+
+import "io"
+
+func do(a io.ReadWriteCloser) { // want `a could be io.ReadCloser`
+	needReader(a)
+	a.Close()
+}
+
+func needReader(io.Reader) {}
+-- file.go.golden --
+package p
+
+import "io"
+
+func do(a io.ReadCloser) { // want `a could be io.ReadCloser`
+	needReader(a)
+	a.Close()
+}
+
+func needReader(io.Reader) {}

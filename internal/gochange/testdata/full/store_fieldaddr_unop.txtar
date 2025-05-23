@@ -1,0 +1,112 @@
+-- file.go --
+package p
+
+type Iface interface{ MethA() }
+type A struct{}
+
+func (A) MethA() {}
+
+type S struct{ a A }
+type SI struct{ iface Iface }
+
+func needsClosure(func()) {}
+
+func do(a A) *S {
+	s := &S{}
+	s.a = a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func do2(a *A) *S {
+	s := &S{}
+	s.a = *a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func do3(a A) *SI { // want `a could be Iface`
+	s := &SI{}
+	s.iface = a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func do4(a *A) *SI { // want `a could be Iface`
+	s := &SI{}
+	s.iface = *a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func do5(a Iface) *SI {
+	s := &SI{}
+	s.iface = a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func test() {
+	do(A{})
+	do2(&A{})
+	do3(A{})
+	do4(&A{})
+	do5(A{})
+	do5(&A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ MethA() }
+type A struct{}
+
+func (A) MethA() {}
+
+type S struct{ a A }
+type SI struct{ iface Iface }
+
+func needsClosure(func()) {}
+
+func do(a A) *S {
+	s := &S{}
+	s.a = a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func do2(a *A) *S {
+	s := &S{}
+	s.a = *a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func do3(a Iface) *SI { // want `a could be Iface`
+	s := &SI{}
+	s.iface = a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func do4(a Iface) *SI { // want `a could be Iface`
+	s := &SI{}
+	s.iface = *a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func do5(a Iface) *SI {
+	s := &SI{}
+	s.iface = a
+	needsClosure(func() { _ = s })
+	return s
+}
+
+func test() {
+	do(A{})
+	do2(&A{})
+	do3(A{})
+	do4(&A{})
+	do5(A{})
+	do5(&A{})
+}

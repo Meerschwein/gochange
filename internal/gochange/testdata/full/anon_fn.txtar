@@ -1,0 +1,11 @@
+-- file.go --
+package p
+
+func do() {
+	_ = func(num1 *int) {
+		dec := func(num2 *int) int {
+			return *num2 - 1
+		}
+		_ = dec(num1)
+	}
+}

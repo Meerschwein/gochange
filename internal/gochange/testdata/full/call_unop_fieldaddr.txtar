@@ -1,0 +1,129 @@
+
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type hasFns struct {
+	fnA  func() func(A)
+	fnA2 func() func(int, A)
+	fnI  func() func(Iface)
+}
+
+func do(a A) {
+	h := hasFns{}
+	h.fnA()(a)
+	h.fnA2()(0, a)
+}
+
+func do2(a A) { // want `a could be Iface`
+	h := hasFns{}
+	h.fnI()(a)
+}
+
+func do3(a *A) {
+	h := hasFns{}
+	h.fnA()(*a)
+}
+
+func do4(i Iface) {
+	h := hasFns{}
+	h.fnI()(i)
+}
+
+func do5(h *hasFns, a A) {
+	h.fnA()(a)
+	h.fnA2()(0, a)
+}
+
+func do6(h *hasFns, a A) { // want `a could be Iface`
+	h.fnI()(a)
+}
+
+func do7(h *hasFns, a *A) {
+	h.fnA()(*a)
+}
+
+func do8(h *hasFns, i Iface) {
+	h.fnI()(i)
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(&A{})
+	do4(A{})
+	do4(&A{})
+	do5(&hasFns{}, A{})
+	do6(&hasFns{}, A{})
+	do7(&hasFns{}, &A{})
+	do8(&hasFns{}, A{})
+	do8(&hasFns{}, &A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type hasFns struct {
+	fnA  func() func(A)
+	fnA2 func() func(int, A)
+	fnI  func() func(Iface)
+}
+
+func do(a A) {
+	h := hasFns{}
+	h.fnA()(a)
+	h.fnA2()(0, a)
+}
+
+func do2(a Iface) { // want `a could be Iface`
+	h := hasFns{}
+	h.fnI()(a)
+}
+
+func do3(a *A) {
+	h := hasFns{}
+	h.fnA()(*a)
+}
+
+func do4(i Iface) {
+	h := hasFns{}
+	h.fnI()(i)
+}
+
+func do5(h *hasFns, a A) {
+	h.fnA()(a)
+	h.fnA2()(0, a)
+}
+
+func do6(h *hasFns, a Iface) { // want `a could be Iface`
+	h.fnI()(a)
+}
+
+func do7(h *hasFns, a *A) {
+	h.fnA()(*a)
+}
+
+func do8(h *hasFns, i Iface) {
+	h.fnI()(i)
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(&A{})
+	do4(A{})
+	do4(&A{})
+	do5(&hasFns{}, A{})
+	do6(&hasFns{}, A{})
+	do7(&hasFns{}, &A{})
+	do8(&hasFns{}, A{})
+	do8(&hasFns{}, &A{})
+}

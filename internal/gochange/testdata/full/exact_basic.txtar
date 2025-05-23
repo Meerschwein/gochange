@@ -1,0 +1,10 @@
+-- file.go --
+package p
+
+type T int
+
+func use(t T) {}
+
+func analyze(t T) {
+	use(t)
+}

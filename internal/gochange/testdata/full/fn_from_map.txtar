@@ -1,0 +1,58 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+var fnsIface map[int]func(Iface)
+
+func do(a A) { // want `a could be Iface`
+	fnsIface[0](a)
+}
+
+func do2(a A) { // want `a could be Iface`
+	fn, _ := fnsIface[0]
+	fn(a)
+}
+
+var fnsA map[int]func(A)
+
+func do3(a A) {
+	fnsA[0](a)
+}
+
+func do4(a A) {
+	fn, _ := fnsA[0]
+	fn(a)
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+var fnsIface map[int]func(Iface)
+
+func do(a Iface) { // want `a could be Iface`
+	fnsIface[0](a)
+}
+
+func do2(a Iface) { // want `a could be Iface`
+	fn, _ := fnsIface[0]
+	fn(a)
+}
+
+var fnsA map[int]func(A)
+
+func do3(a A) {
+	fnsA[0](a)
+}
+
+func do4(a A) {
+	fn, _ := fnsA[0]
+	fn(a)
+}

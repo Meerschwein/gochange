@@ -1,0 +1,18 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+func do(a A) {
+	var innerA A
+	func() {
+		a = innerA
+	}()
+}
+
+func test() {
+	do(A{})
+}

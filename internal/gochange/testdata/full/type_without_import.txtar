@@ -1,0 +1,39 @@
+-- p1/file.go --
+package p1
+
+import "mod.com/p2"
+
+type A struct{}
+
+func (A) MethA() {}
+
+func use(a A) { // want `a could be mod.com/p3.Iface`
+	p2.NeedP3Iface(a)
+}
+-- p1/file.go.golden --
+package p1
+
+import "mod.com/p3"
+
+import "mod.com/p2"
+
+type A struct{}
+
+func (A) MethA() {}
+
+func use(a p3.Iface) { // want `a could be mod.com/p3.Iface`
+	p2.NeedP3Iface(a)
+}
+-- p2/file.go --
+package p2
+
+import "mod.com/p3"
+
+func NeedP3Iface(p3.Iface) {}
+-- p3/file.go --
+package p3
+
+type Iface interface{ MethA() }
+-- go.mod --
+module mod.com
+go 1.18

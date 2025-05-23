@@ -1,0 +1,64 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+func maybeAFn() (func(A), error)      { return nil, nil }
+func maybeAIFn() (func(Iface), error) { return nil, nil }
+
+func do(a A) {
+	fn, _ := maybeAFn()
+	fn(a)
+}
+
+func do2(a A) { // want `a could be Iface`
+	fn, _ := maybeAIFn()
+	fn(a)
+}
+
+func do3(a Iface) {
+	fn, _ := maybeAIFn()
+	fn(a)
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(A{})
+	do3(&A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+func maybeAFn() (func(A), error)      { return nil, nil }
+func maybeAIFn() (func(Iface), error) { return nil, nil }
+
+func do(a A) {
+	fn, _ := maybeAFn()
+	fn(a)
+}
+
+func do2(a Iface) { // want `a could be Iface`
+	fn, _ := maybeAIFn()
+	fn(a)
+}
+
+func do3(a Iface) {
+	fn, _ := maybeAIFn()
+	fn(a)
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(A{})
+	do3(&A{})
+}

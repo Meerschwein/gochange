@@ -1,0 +1,38 @@
+-- file.go --
+package p
+
+func do4(c C) {
+	needsIfaceString(c, c.s)
+}
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+type B struct{ a A }
+
+func (B) Meth() {}
+
+func needsIface(i Iface)                 {}
+func needsIfaceTwice(i1 Iface, i2 Iface) {}
+func needsIfaceA(i1 Iface, a A)          {}
+
+func do(b B) {
+	needsIface(b.a)
+}
+
+func do2(b B) {
+	needsIfaceTwice(b, b.a)
+}
+
+func do3(b B) {
+	needsIfaceA(b, b.a)
+}
+
+type C struct{ s string }
+
+func (C) Meth() {}
+
+func needsIfaceString(i Iface, s string) {}

@@ -1,0 +1,24 @@
+-- file.go --
+package p
+
+type private_Iface interface{ MethA() }
+
+type A struct{}
+
+func (a A) MethA() {}
+
+func use(a A) { // want `a could be private_Iface`
+	a.MethA()
+}
+-- file.go.golden --
+package p
+
+type private_Iface interface{ MethA() }
+
+type A struct{}
+
+func (a A) MethA() {}
+
+func use(a private_Iface) { // want `a could be private_Iface`
+	a.MethA()
+}

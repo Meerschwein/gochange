@@ -1,0 +1,28 @@
+-- p1/p1.go --
+package p1
+
+type A struct{}
+
+func (a A) MethA() {}
+
+// no suggestion since private_IfaceA is private in p2
+func use(a A) { // want `a could be interface{MethA\(\)}`
+	a.MethA()
+}
+-- p1/p1.go.golden --
+package p1
+
+type A struct{}
+
+func (a A) MethA() {}
+
+// no suggestion since private_IfaceA is private in p2
+func use(a interface{ MethA() }) { // want `a could be interface{MethA\(\)}`
+	a.MethA()
+}
+-- p2/p2.go --
+package p2
+
+type private_IfaceA interface{ MethA() }
+-- go.mod --
+module somemod

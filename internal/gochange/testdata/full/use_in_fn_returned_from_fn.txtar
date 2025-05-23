@@ -1,0 +1,50 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+func returnAFn() func(int, A) {
+	return func(int, A) {
+	}
+}
+
+func returnIfaceFn() func(int, Iface) {
+	return func(int, Iface) {
+	}
+}
+
+func do(a A) {
+	returnAFn()(1, a)
+}
+
+func doi(a A) { // want `a could be Iface`
+	returnIfaceFn()(1, a)
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+func returnAFn() func(int, A) {
+	return func(int, A) {
+	}
+}
+
+func returnIfaceFn() func(int, Iface) {
+	return func(int, Iface) {
+	}
+}
+
+func do(a A) {
+	returnAFn()(1, a)
+}
+
+func doi(a Iface) { // want `a could be Iface`
+	returnIfaceFn()(1, a)
+}

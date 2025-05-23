@@ -1,0 +1,14 @@
+-- file.go --
+package p
+
+import "net"
+
+type S struct{}
+
+type Empty interface{}
+
+func (s *S) do(ip net.IP) {
+	s.need(ip)
+}
+
+func (*S) need(ip net.IP) {}

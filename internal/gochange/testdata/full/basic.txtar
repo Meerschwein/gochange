@@ -1,0 +1,66 @@
+-- file.go --
+package p
+
+type IfaceA interface{ MethA() }
+
+type A struct{}
+
+func (a A) MethA() {}
+
+func use1(a A) { // want `a could be IfaceA`
+	a.MethA()
+}
+
+func use2(a *A) { // want `a could be IfaceA`
+	a.MethA()
+}
+
+func use3(a IfaceA) {
+	a.MethA()
+}
+
+func use4[T IfaceA](a T) {
+	a.MethA()
+}
+
+func test() {
+	use1(A{})
+	use2(&A{})
+	use3(A{})
+	use3(&A{})
+	use4(A{})
+	use4(&A{})
+}
+-- file.go.golden --
+package p
+
+type IfaceA interface{ MethA() }
+
+type A struct{}
+
+func (a A) MethA() {}
+
+func use1(a IfaceA) { // want `a could be IfaceA`
+	a.MethA()
+}
+
+func use2(a IfaceA) { // want `a could be IfaceA`
+	a.MethA()
+}
+
+func use3(a IfaceA) {
+	a.MethA()
+}
+
+func use4[T IfaceA](a T) {
+	a.MethA()
+}
+
+func test() {
+	use1(A{})
+	use2(&A{})
+	use3(A{})
+	use3(&A{})
+	use4(A{})
+	use4(&A{})
+}

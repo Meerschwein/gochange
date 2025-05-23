@@ -1,0 +1,20 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func (A) Foo(string) {}
+
+func do(a A) { // want `a could be interface{Foo\(string\)}`
+	a.Foo("hello")
+}
+-- file.go.golden --
+package p
+
+type A struct{}
+
+func (A) Foo(string) {}
+
+func do(a interface{ Foo(string) }) { // want `a could be interface{Foo\(string\)}`
+	a.Foo("hello")
+}

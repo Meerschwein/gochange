@@ -1,0 +1,16 @@
+Make sure we handle builtin functions without panicking
+
+-- file.go --
+package p
+
+func use1(a []int) {
+	_ = len(a)
+}
+
+func use2(a map[int]int) {
+	_ = len(a)
+}
+
+func use3(a, b []int) {
+	_ = append(a, b...)
+}

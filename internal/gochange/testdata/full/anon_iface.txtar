@@ -1,0 +1,86 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func (A) MethA() {}
+
+func needsA(a A)                                   {}
+func needsIface(i interface{ MethA() })            {}
+func moreThanA(n int, a A, i interface{ MethA() }) {}
+func needsAny(a interface{})                       {}
+
+func use(a A) {
+	a.MethA()
+	needsA(a)
+}
+
+func use2(i interface{ MethA() }) {
+	i.MethA()
+	needsIface(i)
+}
+
+func use3(a A) {
+	a.MethA()
+	moreThanA(42, a, a)
+}
+
+// needs to be escaped beacuse its a regex
+func use4(a A) { // want `a could be interface{MethA\(\)}`
+	needsIface(a)
+}
+
+func use5(a A) { // never suggest the empty interface
+	needsAny(a)
+}
+
+func test() {
+	use(A{})
+	use2(A{})
+	use2(&A{})
+	use3(A{})
+	use4(A{})
+}
+-- file.go.golden --
+package p
+
+type A struct{}
+
+func (A) MethA() {}
+
+func needsA(a A)                                   {}
+func needsIface(i interface{ MethA() })            {}
+func moreThanA(n int, a A, i interface{ MethA() }) {}
+func needsAny(a interface{})                       {}
+
+func use(a A) {
+	a.MethA()
+	needsA(a)
+}
+
+func use2(i interface{ MethA() }) {
+	i.MethA()
+	needsIface(i)
+}
+
+func use3(a A) {
+	a.MethA()
+	moreThanA(42, a, a)
+}
+
+// needs to be escaped beacuse its a regex
+func use4(a interface{ MethA() }) { // want `a could be interface{MethA\(\)}`
+	needsIface(a)
+}
+
+func use5(a A) { // never suggest the empty interface
+	needsAny(a)
+}
+
+func test() {
+	use(A{})
+	use2(A{})
+	use2(&A{})
+	use3(A{})
+	use4(A{})
+}

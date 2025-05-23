@@ -1,0 +1,39 @@
+-- p1/file.go --
+package p1
+
+import "testing"
+
+type IfaceM interface {
+	Run() int
+}
+
+func TestMain(t *testing.M) {
+	t.Run()
+}
+-- p2/file.go --
+package p2
+
+import "testing"
+
+type IfaceM interface {
+	Run() int
+}
+
+func NotMain(t *testing.M) { // want `t could be IfaceM`
+	t.Run()
+}
+-- p2/file.go.golden --
+package p2
+
+import "testing"
+
+type IfaceM interface {
+	Run() int
+}
+
+func NotMain(t IfaceM) { // want `t could be IfaceM`
+	t.Run()
+}
+-- go.mod --
+module mod.com
+

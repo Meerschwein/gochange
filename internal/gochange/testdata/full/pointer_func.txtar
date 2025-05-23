@@ -1,0 +1,10 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func needsPointer(_ *A) {}
+
+func use(a *A) {
+	needsPointer(a)
+}

@@ -1,0 +1,86 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{ val string }
+
+func (A) Meth() {}
+
+type S struct{ val A }
+type SI struct{ val Iface }
+
+var i int
+
+func do(a A) {
+	s := &S{}
+	if i == 0 {
+		s = &S{}
+	}
+	s.val = a
+}
+
+func do2(a A) { // want `a could be Iface`
+	s := &SI{}
+	if i == 0 {
+		s = &SI{}
+	}
+	s.val = a
+}
+
+func do3(a Iface) {
+	s := &SI{}
+	if i == 0 {
+		s = &SI{}
+	}
+	s.val = a
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(A{})
+	do3(&A{})
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{ val string }
+
+func (A) Meth() {}
+
+type S struct{ val A }
+type SI struct{ val Iface }
+
+var i int
+
+func do(a A) {
+	s := &S{}
+	if i == 0 {
+		s = &S{}
+	}
+	s.val = a
+}
+
+func do2(a Iface) { // want `a could be Iface`
+	s := &SI{}
+	if i == 0 {
+		s = &SI{}
+	}
+	s.val = a
+}
+
+func do3(a Iface) {
+	s := &SI{}
+	if i == 0 {
+		s = &SI{}
+	}
+	s.val = a
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(A{})
+	do3(&A{})
+}

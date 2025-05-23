@@ -1,0 +1,27 @@
+-- file.go --
+package p
+
+type IfaceA interface{ MethA() }
+
+type A struct{}
+
+func (A) MethA() {}
+
+func needsA(a A)                     {}
+func needsIface(i IfaceA)            {}
+func moreThanA(n int, a A, i IfaceA) {}
+
+func use(a A) {
+	a.MethA()
+	needsA(a)
+}
+
+func use2(i IfaceA) {
+	i.MethA()
+	needsIface(i)
+}
+
+func use3(a A) {
+	a.MethA()
+	moreThanA(42, a, a)
+}

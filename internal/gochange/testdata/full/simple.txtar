@@ -1,0 +1,24 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+func do(a A) { // want `a could be Iface`
+	a.Meth()
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+
+type A struct{}
+
+func (A) Meth() {}
+
+func do(a Iface) { // want `a could be Iface`
+	a.Meth()
+}

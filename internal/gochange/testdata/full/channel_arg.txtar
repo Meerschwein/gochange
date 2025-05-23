@@ -1,0 +1,12 @@
+-- file.go --
+package p
+
+import "fmt"
+
+// kubernetes/pkg/util/goroutinemap/goroutinemap_test.go:486:6
+func generateErrorFunc(done <-chan interface{}) func() error {
+	return func() error {
+		<-done
+		return fmt.Errorf("Generic error")
+	}
+}

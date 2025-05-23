@@ -1,0 +1,86 @@
+-- file.go --
+package p
+
+type PointerMethod interface {
+	PointerOnly()
+}
+
+type ValueMethod interface {
+	ValueOnly()
+}
+
+type BothMethods interface {
+	PointerOnly()
+	ValueOnly()
+}
+
+type MyType struct{}
+
+func (m *MyType) PointerOnly() {}
+func (m MyType) ValueOnly()    {}
+
+func UsePointer(m *MyType) { // want `m could be PointerMethod`
+	m.PointerOnly()
+}
+
+func UseValue(m MyType) { // want `m could be ValueMethod`
+	m.ValueOnly()
+}
+
+func UsePointerWithValueMethod(m *MyType) { // want `m could be ValueMethod`
+	m.ValueOnly() // Pointer can call value methods
+}
+
+func UseBothOnPointer(m *MyType) { // want `m could be BothMethods`
+	m.PointerOnly()
+	m.ValueOnly()
+}
+
+func UseBothOnValue(m MyType) { // want `m could be ValueMethod`
+	// This should NOT suggest BothMethods because value receivers
+	// can't access pointer methods
+	m.ValueOnly()
+}
+-- file.go.golden --
+package p
+
+type PointerMethod interface {
+	PointerOnly()
+}
+
+type ValueMethod interface {
+	ValueOnly()
+}
+
+type BothMethods interface {
+	PointerOnly()
+	ValueOnly()
+}
+
+type MyType struct{}
+
+func (m *MyType) PointerOnly() {}
+func (m MyType) ValueOnly()    {}
+
+func UsePointer(m PointerMethod) { // want `m could be PointerMethod`
+	m.PointerOnly()
+}
+
+func UseValue(m ValueMethod) { // want `m could be ValueMethod`
+	m.ValueOnly()
+}
+
+func UsePointerWithValueMethod(m ValueMethod) { // want `m could be ValueMethod`
+	m.ValueOnly() // Pointer can call value methods
+}
+
+func UseBothOnPointer(m BothMethods) { // want `m could be BothMethods`
+	m.PointerOnly()
+	m.ValueOnly()
+}
+
+func UseBothOnValue(m ValueMethod) { // want `m could be ValueMethod`
+	// This should NOT suggest BothMethods because value receivers
+	// can't access pointer methods
+	m.ValueOnly()
+}

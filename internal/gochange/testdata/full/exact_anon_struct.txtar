@@ -1,0 +1,25 @@
+-- file.go --
+package p
+
+type A struct{}
+
+func needAnon(a struct{})              {}
+func needAnon2(a struct{ foo string }) {}
+
+func do(a A) {
+	var anon struct{}
+	anon = a
+	_ = anon
+}
+
+func do2(a A) {
+	needAnon(a)
+}
+
+func do3(a struct{}) {
+	needAnon(a)
+}
+
+func do4(a struct{ foo string }) {
+	needAnon2(a)
+}

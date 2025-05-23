@@ -1,0 +1,152 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type hasFns struct{}
+
+func (h *hasFns) fns() []func(A)      { return nil }
+func (h *hasFns) fnsI() []func(Iface) { return nil }
+
+func do(a A) {
+	h := hasFns{}
+	for _, f := range h.fns() {
+		f(a)
+	}
+}
+
+func do2(a A) { // want `a could be Iface`
+	h := hasFns{}
+	for _, f := range h.fnsI() {
+		f(a)
+	}
+}
+
+func do3(a *A) {
+	h := hasFns{}
+	for _, f := range h.fns() {
+		f(*a)
+	}
+}
+
+func do4(i Iface) {
+	h := hasFns{}
+	for _, f := range h.fnsI() {
+		f(i)
+	}
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(&A{})
+	do4(A{})
+	do4(&A{})
+}
+
+func extraDo(_ int, a A) {
+	h := hasFns{}
+	for _, f := range h.fns() {
+		f(a)
+	}
+}
+
+func extraDo2(_ int, a A) { // want `a could be Iface`
+	h := hasFns{}
+	for _, f := range h.fnsI() {
+		f(a)
+	}
+}
+
+func extraDo3(_ int, a *A) {
+	h := hasFns{}
+	for _, f := range h.fns() {
+		f(*a)
+	}
+}
+
+func extraDo4(_ int, i Iface) {
+	h := hasFns{}
+	for _, f := range h.fnsI() {
+		f(i)
+	}
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+type hasFns struct{}
+
+func (h *hasFns) fns() []func(A)      { return nil }
+func (h *hasFns) fnsI() []func(Iface) { return nil }
+
+func do(a A) {
+	h := hasFns{}
+	for _, f := range h.fns() {
+		f(a)
+	}
+}
+
+func do2(a Iface) { // want `a could be Iface`
+	h := hasFns{}
+	for _, f := range h.fnsI() {
+		f(a)
+	}
+}
+
+func do3(a *A) {
+	h := hasFns{}
+	for _, f := range h.fns() {
+		f(*a)
+	}
+}
+
+func do4(i Iface) {
+	h := hasFns{}
+	for _, f := range h.fnsI() {
+		f(i)
+	}
+}
+
+func test() {
+	do(A{})
+	do2(A{})
+	do3(&A{})
+	do4(A{})
+	do4(&A{})
+}
+
+func extraDo(_ int, a A) {
+	h := hasFns{}
+	for _, f := range h.fns() {
+		f(a)
+	}
+}
+
+func extraDo2(_ int, a Iface) { // want `a could be Iface`
+	h := hasFns{}
+	for _, f := range h.fnsI() {
+		f(a)
+	}
+}
+
+func extraDo3(_ int, a *A) {
+	h := hasFns{}
+	for _, f := range h.fns() {
+		f(*a)
+	}
+}
+
+func extraDo4(_ int, i Iface) {
+	h := hasFns{}
+	for _, f := range h.fnsI() {
+		f(i)
+	}
+}

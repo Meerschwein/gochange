@@ -1,0 +1,12 @@
+-- p1/file.go --
+package p1
+
+import "testing"
+
+func needsTPointer(t *testing.T) {}
+func needsTB(t testing.TB)       {}
+
+func do(t *testing.T) {
+	needsTPointer(t)
+	needsTB(t)
+}

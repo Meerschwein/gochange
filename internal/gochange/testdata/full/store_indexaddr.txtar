@@ -1,0 +1,44 @@
+-- file.go --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+var ifaces = []Iface{}
+
+func do(a A) { // want `a could be Iface`
+	ifaces[0] = a
+}
+
+func do2(a Iface) {
+	ifaces[0] = a
+}
+
+func use() {
+	a := A{}
+	do(a)
+}
+-- file.go.golden --
+package p
+
+type Iface interface{ Meth() }
+type A struct{}
+
+func (A) Meth() {}
+
+var ifaces = []Iface{}
+
+func do(a Iface) { // want `a could be Iface`
+	ifaces[0] = a
+}
+
+func do2(a Iface) {
+	ifaces[0] = a
+}
+
+func use() {
+	a := A{}
+	do(a)
+}
