@@ -5,14 +5,30 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 
 	"golang.org/x/tools/txtar"
 )
 
 func main() {
-	path := os.Args[1]
+	paths := os.Args[1:]
+	wg := sync.WaitGroup{}
+	for _, path := range paths {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			formatFile(path)
+		}()
+	}
+	wg.Wait()
+}
+
+func formatFile(path string) {
 	orig, err := txtar.ParseFile(path)
-	must(err)
+	if err != nil {
+		logErr(err)
+		return
+	}
 
 	formatted := &txtar.Archive{}
 	formatted.Comment = orig.Comment
@@ -26,7 +42,10 @@ func main() {
 			cmd.Stdout = &buf
 
 			err := cmd.Run()
-			must(err)
+			if err != nil {
+				logErr(err)
+				return
+			}
 		} else {
 			buf.Write(f.Data)
 		}
@@ -38,15 +57,21 @@ func main() {
 	}
 
 	f, err := os.Create(path)
-	must(err)
+	if err != nil {
+		logErr(err)
+		return
+	}
 	defer f.Close()
 
 	_, err = f.Write(txtar.Format(formatted))
-	must(err)
+	if err != nil {
+		logErr(err)
+		return
+	}
 }
 
-func must(err error) {
+func logErr(err error) {
 	if err != nil {
-		panic(err)
+		os.Stderr.WriteString(err.Error() + "\n")
 	}
 }

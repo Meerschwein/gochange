@@ -11,3 +11,9 @@ go build ./cmd/gochange
 ```sh
 go test ./...
 ```
+
+## Format test files
+
+```sh
+go run ./cmd/testfilefmt ./internal/gochange/testdata/full/*.txtar
+```
