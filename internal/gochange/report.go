@@ -29,7 +29,12 @@ func report(pass *analysis.Pass, fn *ssa.Function, param *ssa.Parameter, match m
 			return
 		}
 		if m.iface.IsMethodSet() {
-			reportRenameParamType(pass, param, types.TypeString(m.iface, func(pkg *types.Package) string { return pkg.Name() }))
+			reportRenameParamType(pass, param, types.TypeString(m.iface, func(pkg *types.Package) string {
+				if pkg == pass.Pkg {
+					return ""
+				}
+				return pkg.Name()
+			}))
 			return
 		}
 		if containsComparable(m.iface) {

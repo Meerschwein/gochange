@@ -1,0 +1,26 @@
+-- file1.go --
+package p
+
+type I interface {
+	M()
+}
+-- file2.go --
+package p
+
+type A struct{}
+
+func (A) M() I { return nil }
+
+func do(a A) { // want `a could be interface{M\(\) I}`
+	_ = a.M()
+}
+-- file2.go.golden --
+package p
+
+type A struct{}
+
+func (A) M() I { return nil }
+
+func do(a interface{ M() I }) { // want `a could be interface{M\(\) I}`
+	_ = a.M()
+}
