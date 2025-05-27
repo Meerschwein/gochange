@@ -41,7 +41,15 @@ func run(pass *analysis.Pass) (any, error) {
 	return nil, nil
 }
 
+var SwallowPanic = true
+
 func analyzeFn(pass *analysis.Pass, fn *ssa.Function, knownIfaces []*types.TypeName) {
+	defer func() {
+		if SwallowPanic {
+			recover()
+		}
+	}()
+
 	if isAnonymousFn(fn) || // don't analyze closures
 		fn.Blocks == nil || // External function so no function body to analyze
 		hasSpecialSig(fn) {

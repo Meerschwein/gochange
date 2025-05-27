@@ -10,6 +10,10 @@ import (
 	"golang.org/x/tools/txtar"
 )
 
+func init() {
+	gochange.SwallowPanic = false
+}
+
 func TestAllCases(t *testing.T) {
 	testutil.EachFile(t, "./testdata/full/*.txtar", func(t *testing.T, input string) {
 		t.Parallel()
